@@ -4,4 +4,7 @@ def SUM(cells):
 def MEAN(cells):
     return SUM(cells)/len(cells)
 
-FUNCTIONS = ["SUM", "MEAN"]
+def RECENT(cells):
+    return cells[::-1]
+
+FUNCTIONS = ["SUM", "MEAN", "RECENT"]

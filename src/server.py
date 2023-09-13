@@ -56,6 +56,9 @@ class Server:
             result = functions.SUM(cells)
         elif function == "MEAN":
             result = functions.MEAN(cells)
+        elif function == "RECENT":
+            content = functions.RECENT(content)
+            result = None
         else:
             result = None
 
