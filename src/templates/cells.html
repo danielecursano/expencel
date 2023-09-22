@@ -98,8 +98,9 @@
             const author = document.getElementById('aut').value;
             const function_name = document.getElementById('function').value;
             const date = document.getElementById('date').value;
+            const param = document.getElementById("amount").value;
             // Create the URL for the page.
-            const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&date=${date}`;
+            const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&date=${date}&param=${param}`;
 
             // Open the page in a new tab in the browser.
             window.open(url, '_blank');

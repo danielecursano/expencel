@@ -54,10 +54,24 @@ class Server:
         function = function.upper() if function else None
         if function == "SUM":
             result = functions.SUM(cells)
-        elif function == "MEAN":
+        elif function == "AVERAGE":
             result = functions.MEAN(cells)
         elif function == "RECENT":
             content = functions.RECENT(content)
+            result = None
+        elif function == "LESS THAN":
+            param = int(args.get("param")) if args.get("param") != "" else 10000000
+            content = functions.LT(cells, param)
+            result = None
+        elif function == "MORE THAN":
+            param = int(args.get("param")) if args.get("param") != "" else 0
+            content = functions.BT(cells, param)
+            result = None
+        elif function == "SORT":
+            content = functions.SORT(cells)
+            result = None
+        elif function == "REVERSED SORT":
+            content = functions.R_SORT(cells)
             result = None
         else:
             result = None
