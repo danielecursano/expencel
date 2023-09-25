@@ -14,11 +14,17 @@ class Cell:
         return f"<{self.cat} {self.day} : {self.amount}>"
 
 class Sheet:
-    def __init__(self, name: str):
+    def __init__(self, name: str, loaded=False):
         self.name = name
         self.cells = []
         self.authors = []
         self.categories = []
+        if not loaded:
+            db = sqlite3.connect(DATABASE_PATH+self.name+".db")
+            cursor = db.cursor()
+            cursor.execute("CREATE TABLE cells (date text, desc text, cat text, amount int, author text);")
+            db.commit()
+
 
     def add_cell(self, desc: str, cat: str, amount: int, author: str, day: datetime.date=datetime.date.today()):
         cat = cat.upper()
@@ -75,7 +81,7 @@ class Sheet:
 
     @staticmethod
     def load(name):
-        new_obj = Sheet(name)
+        new_obj = Sheet(name, loaded=True)
         db = sqlite3.connect(DATABASE_PATH+name+".db")
         cursor = db.cursor()
         cursor.execute("SELECT * FROM cells")

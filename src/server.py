@@ -1,19 +1,24 @@
 from flask import Flask, request, render_template
 from src.structs import Sheet
 import src.functions as functions
+from src.constants import DATABASE_PATH
 import datetime 
-from tabulate import tabulate
 import json
+import os
 
 class Server:
 
-    def __init__(self, sheet: Sheet=None):
-        self.sheets = {sheet.name: sheet}
-
+    def __init__(self, folder=DATABASE_PATH):
+        self.sheets = {}
+        files = os.listdir(folder)
+        for file in files:
+            name = file[:len(file)-3]
+            self.sheets[name] = Sheet.load(name)
         self.app = Flask(__name__)
         self.app.route("/", methods=["GET"])(self.get_sheet)
         self.app.route("/sheet/<sheet_name>", methods=["GET"])(self.get_cells)
         self.app.route("/add/<sheet_name>", methods=['POST'])(self.add_cell)
+        self.app.route("/create/<sheet_name>", methods=['POST'])(self.create_sheet)
 
     def get_sheet(self):
         content = list(self.sheets.keys())
@@ -81,7 +86,7 @@ class Server:
     def add_cell(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
         if not sheet:
-            return {"Error": "Sheet not found"}
+            return {"Error": "Sheet not found!"}
         args = json.loads(request.data)
         date = args["date"]
         cat = args["category"]
@@ -89,12 +94,18 @@ class Server:
         amount = float(args["amount"])
         author = args["author"]
         sheet.add_cell(desc, cat, amount, author, datetime.datetime.strptime(date, "%d-%m-%Y").date())
-        return {"Message": "Success"}
+        return {"Message": "Success!"}
+    
+    def create_sheet(self, sheet_name):
+        if sheet_name in self.sheets.keys():
+            return {"Error": "Sheet already exists!"}
+        new_obj = Sheet(sheet_name)
+        self.sheets[sheet_name] = new_obj
+        return {"Message": "Success!"}
 
     def run(self, debug=0):
         self.app.run(debug=debug)
 
 if __name__ == "__main__":
-    s = Sheet.load("spese")
-    app = Server(s)
+    app = Server()
     app.run(1)
