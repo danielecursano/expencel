@@ -19,10 +19,11 @@ class Server:
         self.app.route("/sheet/<sheet_name>", methods=["GET"])(self.get_cells)
         self.app.route("/add/<sheet_name>", methods=['POST'])(self.add_cell)
         self.app.route("/create/<sheet_name>", methods=['POST'])(self.create_sheet)
+        self.app.route("/delete/<sheet_name>", methods=["GET"])(self.delete_sheet)
 
-    def get_sheet(self):
+    def get_sheet(self, alert=None):
         content = list(self.sheets.keys())
-        return render_template("home.html", content=content)
+        return render_template("home.html", content=content, msg=alert)
 
     def get_cells(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
@@ -102,6 +103,13 @@ class Server:
         new_obj = Sheet(sheet_name)
         self.sheets[sheet_name] = new_obj
         return {"Message": "Success!"}
+    
+    def delete_sheet(self, sheet_name):
+        if sheet_name not in self.sheets.keys():
+            return self.get_sheet(alert="Sheet not found")
+        self.sheets.pop(sheet_name)
+        os.remove(DATABASE_PATH+sheet_name+".db")
+        return self.get_sheet(alert="Sheet deleted successfully")
 
     def run(self, debug=0):
         self.app.run(debug=debug)
