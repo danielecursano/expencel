@@ -61,7 +61,7 @@ class Server:
         if function == "SUM":
             result = functions.SUM(cells)
         elif function == "AVERAGE":
-            result = functions.MEAN(cells)
+            result = functions.AVERAGE(cells)
         elif function == "RECENT":
             content = functions.RECENT(content)
             result = None

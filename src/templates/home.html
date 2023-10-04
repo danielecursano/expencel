@@ -27,15 +27,15 @@
     <table class="table table-bordered table-hover">
         <thead>
           <tr>
-            <th scope="col">#</th>
             <th scope="col">Sheet Name</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
           {% for id in range(0, content|length) %}
             <tr>
-                <th scope="row">{{id}}</th>
-                <td><a href="/sheet/{{content[id]}}">{{content[id]}}</a>    <a href="/delete/{{content[id]}}">DELETE</a></td>
+                <td><a href="/sheet/{{content[id]}}">{{content[id]}}</a></td>
+                <td><a href="/delete/{{content[id]}}">DELETE</a></td>
             </tr>
           {% endfor %}
         </tbody>
