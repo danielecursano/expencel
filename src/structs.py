@@ -14,13 +14,14 @@ class Cell:
         return f"<{self.cat} {self.day} : {self.amount}>"
 
 class Sheet:
-    def __init__(self, name: str, loaded=False):
+    def __init__(self, name: str, path, loaded=False):
+        self.__path = path
         self.name = name
         self.cells = []
         self.authors = []
         self.categories = []
         if not loaded:
-            db = sqlite3.connect(DATABASE_PATH+self.name+".db")
+            db = sqlite3.connect(self.__path+self.name+".db")
             cursor = db.cursor()
             cursor.execute("CREATE TABLE cells (date text, desc text, cat text, amount int, author text);")
             db.commit()
@@ -71,7 +72,7 @@ class Sheet:
         return filtered_cells
     
     def __save(self):
-        db = sqlite3.connect(DATABASE_PATH+self.name+".db")
+        db = sqlite3.connect(self.__path+self.name+".db")
         cursor = db.cursor()
         cursor.execute("DELETE FROM cells")
         for cell in self.cells:
@@ -80,9 +81,9 @@ class Sheet:
         db.commit()
 
     @staticmethod
-    def load(name):
-        new_obj = Sheet(name, loaded=True)
-        db = sqlite3.connect(DATABASE_PATH+name+".db")
+    def load(name, path):
+        new_obj = Sheet(name, path=path, loaded=True)
+        db = sqlite3.connect(path+name+".db")
         cursor = db.cursor()
         cursor.execute("SELECT * FROM cells")
         data = cursor.fetchall()[::-1]

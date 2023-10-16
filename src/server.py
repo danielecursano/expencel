@@ -8,12 +8,14 @@ import os
 
 class Server:
 
-    def __init__(self, folder=DATABASE_PATH):
+    def __init__(self, path=DATABASE_PATH):
         self.sheets = {}
-        files = os.listdir(folder)
+        self.__path = path
+        files = os.listdir(path)
         for file in files:
-            name = file[:len(file)-3]
-            self.sheets[name] = Sheet.load(name)
+            if file[len(file)-2:] == "db":
+                name = file[:len(file)-3]
+                self.sheets[name] = Sheet.load(name, path)
         self.app = Flask(__name__)
         self.app.route("/", methods=["GET"])(self.get_sheet)
         self.app.route("/sheet/<sheet_name>", methods=["GET"])(self.get_cells)
@@ -21,6 +23,7 @@ class Server:
         self.app.route("/create/", methods=['GET'])(self.create_sheet_form)
         self.app.route("/create/<sheet_name>", methods=['POST'])(self.create_sheet)
         self.app.route("/delete/<sheet_name>", methods=["GET"])(self.delete_sheet)
+        self.app.route("/change_path", methods=["GET", "POST"])(self.change_path)
         self.app.route("/download/<sheet_name>", methods=["GET"])(self.download_sheet)
 
     def get_sheet(self, alert=None):
@@ -105,21 +108,35 @@ class Server:
     def create_sheet(self, sheet_name):
         if sheet_name in self.sheets.keys():
             return {"Error": "Sheet already exists!"}
-        new_obj = Sheet(sheet_name)
+        new_obj = Sheet(sheet_name, self.__path)
         self.sheets[sheet_name] = new_obj
+        return {"Message": "Success!"}
+    
+    def change_path(self):
+        if request.method == "GET":
+            return render_template("change_path.html")
+        args = json.loads(request.data)
+        new_path = args["path"]
+        self.__path = new_path
+        self.sheets = {}
+        files = os.listdir(new_path)
+        for file in files:
+            if file[len(file)-2:] == "db":
+                name = file[:len(file)-3]
+                self.sheets[name] = Sheet.load(name, new_path)
         return {"Message": "Success!"}
     
     def delete_sheet(self, sheet_name):
         if sheet_name not in self.sheets.keys():
             return self.get_sheet(alert="Sheet not found")
         self.sheets.pop(sheet_name)
-        os.remove(DATABASE_PATH+sheet_name+".db")
+        os.remove(self.__path+sheet_name+".db")
         return self.get_sheet(alert="Sheet deleted successfully")
     
     def download_sheet(self, sheet_name):
         if sheet_name not in self.sheets.keys():
             return self.get_sheet(alert="Sheet not found")
-        with open(f"src/db/{sheet_name}.db", "rb") as f:
+        with open(f"{self.__path}{sheet_name}.db", "rb") as f:
             data = f.read()
         return send_file(data, attachment_filename=f"{sheet_name}.db")
 
