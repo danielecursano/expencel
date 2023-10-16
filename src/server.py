@@ -136,9 +136,7 @@ class Server:
     def download_sheet(self, sheet_name):
         if sheet_name not in self.sheets.keys():
             return self.get_sheet(alert="Sheet not found")
-        with open(f"{self.__path}{sheet_name}.db", "rb") as f:
-            data = f.read()
-        return send_file(data, attachment_filename=f"{sheet_name}.db")
+        return send_file(f"{self.__path}{sheet_name}.db", attachment_filename=f"{sheet_name}.db")
 
     def run(self, debug=0):
         self.app.run(debug=debug)
