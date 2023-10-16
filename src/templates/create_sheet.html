@@ -152,7 +152,7 @@
           </a>
         </li>
         <li>
-          <a href="#" class="nav-link text-white">
+          <a href="/create" class="nav-link text-white active">
             <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Create new sheet
           </a>
@@ -170,121 +170,27 @@
       </div>
     </div>
     <div class="b-example-divider b-example-vr"></div>
-    <div class="position-relative top-50" style="width: 100%; height: 100%;">
-        <br>
-        <div class="input-group mb-3">
-            <input type="text" id="post_date" placeholder="Date (dd-mm-YYYY)" class="form-control">
-            <input type="text" id="post_category" placeholder="Category" class="form-control">
-            <input type="number" id="amount" placeholder="Amount" class="form-control">
-            <input type="text" id="desc" placeholder="Description" class="form-control">
-            <input type="text" id="post_author" placeholder="Author" class="form-control">
-            <button type="button" class="btn btn-outline-success" onclick="add()">Add</button>
-          </div>
-        
-          <div class="input-group mb-3">
-            <select class="form-select" id="cat">
-              <option selected>Category</option>
-              {% for cat in categories %}
-              <option value="{{cat}}">{{cat}}</option>
-              {% endfor %}
-            </select>
-            <select class="form-select" id="aut">
-              <option selected>Author</option>
-              {% for aut in authors %}
-              <option value="{{aut}}">{{aut}}</option>
-              {% endfor %}
-            </select>
-            <select class="form-select" id="function">
-              <option selected>Function</option>
-              {% for f in functions %}
-              <option value="{{f}}">{{f}}</option>
-              {% endfor %}
-            </select>
-            <input type="text" aria-label="date" class="form-control" placeholder="Date (ddmmYY)" id="date">
-            
-            <button type="button" class="btn btn-outline-success" onclick="filter()">Filter</button>
-          </div>
-        <table class="table table-bordered table-hover table-striped table-dark" style="height: 100%;">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Date</th>
-            <th scope="col">Category</th>
-            <th scope="col">Description</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Author</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for id in range(0, content|length) %}
-          {% if content[id][3] < 0 %} 
-            <tr class="table-success">
-          {% else %}
-            <tr>
-          {% endif %}
-            <th scope="row">{{id}}</th>
-            <td>{{content[id][0]}}</td>
-            <td>{{content[id][1]}}</td>
-            <td>{{content[id][2]}}</td>
-            <td>{{content[id][3]}}</td>
-            <td>{{content[id][4]}}</td>
-            </tr>
-          {% endfor %}
-          {% if function[0] != None %}
-          <tr>
-            <th scope="row">{{function[0].upper()}}</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{function[1]}}</td>
-            <td></td>
-        </tr>
-          {% endif %}
-        </tbody>
-      </table>
+    <div style="position: relative; top: 250px; width:  100%; height: 100%;">
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="text" placeholder="Sheet name" aria-label="Search" id="name">
+        <button class="btn btn-outline-success" type="button" onclick="newobj()">Create</button>
+      </form>
+    </div>
     </div>
   </main>
 
   <script>
-    function filter() {
-      // Get the values of the form inputs.
-      const category = document.getElementById('cat').value;
-      const author = document.getElementById('aut').value;
-      const function_name = document.getElementById('function').value;
-      const date = document.getElementById('date').value;
-      const param = document.getElementById("amount").value;
-      // Create the URL for the page.
-      const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&date=${date}&param=${param}`;
-
-      // Open the page in a new tab in the browser.
-      window.open(url, '_blank');
-    }
-
-    function add() {
-      // Get the values of the form inputs.
-      const post_date = document.getElementById("post_date").value;
-      const post_category = document.getElementById("post_category").value;
-      const amount = document.getElementById("amount").value;
-      const desc = document.getElementById("desc").value;
-      const post_author = document.getElementById("post_author").value;
-
-      // Create the body of the POST request.
-      const body = {
-        date: post_date,
-        category: post_category,
-        amount: amount,
-        description: desc,
-        author: post_author,
-      };
-
-      // Make the POST request.
-      fetch("/add/{{sheet_name}}", {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
-    }
-
-</script>
+          function newobj() {
+            const name = document.getElementById("name").value;
+            const body = {
+              name: name,
+            };
+            fetch(`/create/${name}`, {
+              method: "POST",
+              body: JSON.stringify(body),
+            });
+          }
+  </script>
 
 <script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 

@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 from src.structs import Sheet
 import src.functions as functions
 from src.constants import DATABASE_PATH
@@ -18,12 +18,17 @@ class Server:
         self.app.route("/", methods=["GET"])(self.get_sheet)
         self.app.route("/sheet/<sheet_name>", methods=["GET"])(self.get_cells)
         self.app.route("/add/<sheet_name>", methods=['POST'])(self.add_cell)
+        self.app.route("/create/", methods=['GET'])(self.create_sheet_form)
         self.app.route("/create/<sheet_name>", methods=['POST'])(self.create_sheet)
         self.app.route("/delete/<sheet_name>", methods=["GET"])(self.delete_sheet)
+        self.app.route("/download/<sheet_name>", methods=["GET"])(self.download_sheet)
 
     def get_sheet(self, alert=None):
         content = list(self.sheets.keys())
         return render_template("home.html", content=content, msg=alert)
+    
+    def create_sheet_form(self):
+        return render_template("create_sheet.html")
 
     def get_cells(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
@@ -110,6 +115,13 @@ class Server:
         self.sheets.pop(sheet_name)
         os.remove(DATABASE_PATH+sheet_name+".db")
         return self.get_sheet(alert="Sheet deleted successfully")
+    
+    def download_sheet(self, sheet_name):
+        if sheet_name not in self.sheets.keys():
+            return self.get_sheet(alert="Sheet not found")
+        with open(f"src/db/{sheet_name}.db", "rb") as f:
+            data = f.read()
+        return send_file(data, attachment_filename=f"{sheet_name}.db")
 
     def run(self, debug=0):
         self.app.run(debug=debug)
