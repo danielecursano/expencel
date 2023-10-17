@@ -65,6 +65,7 @@ class Server:
         content = [[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in cells]
 
         function = args.get("function")
+        image = None
         function = function.upper() if function else None
         if function == "SUM":
             result = functions.SUM(cells)
@@ -87,10 +88,18 @@ class Server:
         elif function == "REVERSED SORT":
             content = functions.R_SORT(cells)
             result = None
+        elif function == "PIE":
+            functions.PIE(cells)
+            image = "tmp.png"
+            result = None
+        elif function == "GRAPH DAY BY DAY":
+            functions.GRAPH_DAY_BY_DAY(cells)
+            image = "tmp.png"
+            result = None
         else:
             result = None
 
-        return render_template("cells.html", sheet_name=sheet.name, content=content, function=[function if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=functions.FUNCTIONS)
+        return render_template("cells.html", sheet_name=sheet.name, content=content, function=[function if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=functions.FUNCTIONS, image_path=image)
     
     def add_cell(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None

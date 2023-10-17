@@ -242,7 +242,12 @@
           {% endif %}
         </tbody>
       </table>
-    </div>
+      {% if image_path != None %}
+      <div class="container">
+      <img src="{{ url_for('static', filename=image_path) }}" alt="Graph" style="width: 40%; height: auto;" id="img">
+      </div>
+      {% endif %}
+    </div> 
   </main>
 
   <script>
