@@ -139,39 +139,40 @@
 </svg>
 
 <main class="d-flex flex-nowrap">  
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
-      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-        <span class="fs-4">Expencel</span>
-      </a>
-      <hr>
-      <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item">
-          <a href="/" class="nav-link text-white" aria-current="page">
-            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-            Home
-          </a>
-        </li>
-        <li>
-          <a href="/create" class="nav-link text-white">
-            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-            Create new sheet
-          </a>
-        </li>
-        <li>
-          <a href="/change_path" class="nav-link text-white">
-            <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-            Load path
-          </a>
-        </li>
-      </ul>
-      <hr>
-      <div class="dropdown">
-        <a href="https://github.com/danielecursano" style="text-decoration: none; color: white;">By Daniele Cursano</a>
-      </div>
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <span class="fs-4">Expencel</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">
+        <a href="/" class="nav-link text-white" aria-current="page">
+          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+          Home
+        </a>
+      </li>
+      <li>
+        <a type="button" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#addsheet_modal">
+          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+          Create new sheet
+        </a>
+      </li>
+      <li>
+        <a type="button" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#changepath_modal">
+          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
+          Change path
+        </a>
+      </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+      <a href="https://github.com/danielecursano" style="text-decoration: none; color: white;">By Daniele Cursano</a>
     </div>
-    <div class="b-example-divider b-example-vr"></div>
-    <div class="position-relative top-50" style="width: 100%; height: 100%;">
-        <br>
+  </div>
+    <div class="b-example-divider b-example-vr" style="width: 0.05%; background-color: grey;"></div>
+
+    <div class="position-relative top-50" style="left: 2%; width: 100%; height: 100%;">
+        <!--
         <div class="input-group mb-3">
             <input type="text" id="post_date" placeholder="Date (dd-mm-YYYY)" class="form-control">
             <input type="text" id="post_category" placeholder="Category" class="form-control">
@@ -180,8 +181,49 @@
             <input type="text" id="post_author" placeholder="Author" class="form-control">
             <button type="button" class="btn btn-outline-success" onclick="add()">Add</button>
           </div>
-        
-          <div class="input-group mb-3">
+        -->
+        <div class="modal fade" id="addcell_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add new cell</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col">
+                    <input type="date" class="form-control" placeholder="Date (dd-mm-YY)" id="post_date" required>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control" placeholder="Category" id="post_category" required>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="col">
+                    <input type="number" class="form-control" placeholder="Amount" id="amount" required>
+                  </div>
+                  <div class="col">
+                    <input type="text" class="form-control" placeholder="Description" id="desc" required>
+                  </div>
+                  <div class="col">
+                    <input type="text" id="post_author" placeholder="Author" class="form-control" required>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="add()">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br><br>
+
+          <div class="input-group mb-3" style="width: 95%;">
+            <button type="button" id="modal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addcell_modal">
+              Add new cell
+            </button>
             <select class="form-select" id="cat">
               <option selected>Category</option>
               {% for cat in categories %}
@@ -204,7 +246,9 @@
             
             <button type="button" class="btn btn-outline-success" onclick="filter()">Filter</button>
           </div>
-        <table class="table table-bordered table-hover table-striped table-dark" style="height: 100%;">
+          <br>
+        <h2 style="color: white; font-weight: 500; font-size: 2rem;">Cells</h2>
+        <table class="table table-hover table-striped table-dark" style="width: 95%;">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -250,6 +294,50 @@
     </div> 
   </main>
 
+  <div class="modal fade" id="addsheet_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Create new sheet</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Name" id="name" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="newobj()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="changepath_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Change path</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Path" id="path" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="changepath()">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     function filter() {
       // Get the values of the form inputs.
@@ -288,6 +376,50 @@
         body: JSON.stringify(body),
       });
     }
+
+    function newobj() {
+                const name = document.getElementById("name").value;
+                const body = {
+                    name: name,
+                };
+
+                fetch(`/create/${name}`, {
+                    method: "POST",
+                    body: JSON.stringify(body),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Parse the JSON data from the response
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    alert(`${JSON.stringify(data)}`);
+                })
+
+            }
+      
+            function changepath() {
+                const name = document.getElementById("path").value;
+                const body = {
+                    name: name,
+                };
+
+                fetch(`/change_path`, {
+                    method: "POST",
+                    body: JSON.stringify({"path": name}),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Parse the JSON data from the response
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    alert(`${JSON.stringify(data)}`);
+                })
+
+            }
 
 </script>
 

@@ -20,18 +20,14 @@ class Server:
         self.app.route("/", methods=["GET"])(self.get_sheet)
         self.app.route("/sheet/<sheet_name>", methods=["GET"])(self.get_cells)
         self.app.route("/add/<sheet_name>", methods=['POST'])(self.add_cell)
-        self.app.route("/create/", methods=['GET'])(self.create_sheet_form)
         self.app.route("/create/<sheet_name>", methods=['POST'])(self.create_sheet)
         self.app.route("/delete/<sheet_name>", methods=["GET"])(self.delete_sheet)
-        self.app.route("/change_path", methods=["GET", "POST"])(self.change_path)
+        self.app.route("/change_path", methods=["POST"])(self.change_path)
         self.app.route("/download/<sheet_name>", methods=["GET"])(self.download_sheet)
 
     def get_sheet(self, alert=None):
         content = list(self.sheets.keys())
         return render_template("home.html", content=content, msg=alert)
-    
-    def create_sheet_form(self):
-        return render_template("create_sheet.html")
 
     def get_cells(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
@@ -113,19 +109,17 @@ class Server:
         desc = args["description"]
         amount = float(args["amount"])
         author = args["author"]
-        sheet.add_cell(desc, cat, amount, author, datetime.datetime.strptime(date, "%d-%m-%Y").date())
+        sheet.add_cell(desc, cat, amount, author, datetime.datetime.strptime(date, "%Y-%m-%d").date())
         return {"Message": "Success!"}
     
     def create_sheet(self, sheet_name):
         if sheet_name in self.sheets.keys():
-            return {"Error": "Sheet already exists!"}
+            return {"Error:" "Name already used!"}
         new_obj = Sheet(sheet_name, self.__path)
         self.sheets[sheet_name] = new_obj
         return {"Message": "Success!"}
     
     def change_path(self):
-        if request.method == "GET":
-            return render_template("change_path.html")
         args = json.loads(request.data)
         new_path = args["path"]
         self.__path = new_path

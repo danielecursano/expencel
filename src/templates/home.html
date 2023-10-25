@@ -152,15 +152,15 @@
           </a>
         </li>
         <li>
-          <a href="/create" class="nav-link text-white">
+          <a type="button" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#addsheet_modal">
             <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
             Create new sheet
           </a>
         </li>
         <li>
-          <a href="/change_path" class="nav-link text-white">
+          <a type="button" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#changepath_modal">
             <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-            Load path
+            Change path
           </a>
         </li>
       </ul>
@@ -169,12 +169,14 @@
         <a href="https://github.com/danielecursano" style="text-decoration: none; color: white;">By Daniele Cursano</a>
       </div>
     </div>
-    <div class="b-example-divider b-example-vr"></div>
-    <div class="position-relative top-50" style="width: 100%; height: 100%;">
-        <table class="table table-bordered table-hover table-striped table-dark" style="height: 100%;">
+    <div class="b-example-divider b-example-vr" style="width: 0.05%; background-color: grey;"></div>
+
+    <div class="position-relative top-50" style="left: 2%; width: 100%; height: 100%;">
+      <br>
+        <table class="table table-hover table-striped table-dark" style="height: 100%; width: 95%;">
             <thead>
               <tr>
-                <th scope="col">Sheet name</th>
+                <th scope="col">Sheet </th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -191,7 +193,96 @@
     </div>
   </main>
 
-<script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <div class="modal fade" id="addsheet_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Create new sheet</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Name" id="name" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="newobj()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="modal fade" id="changepath_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Change path</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Path" id="path" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="changepath()">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+              function newobj() {
+                const name = document.getElementById("name").value;
+                const body = {
+                    name: name,
+                };
+
+                fetch(`/create/${name}`, {
+                    method: "POST",
+                    body: JSON.stringify(body),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Parse the JSON data from the response
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    alert(`${JSON.stringify(data)}`);
+                })
+
+            }
+      
+            function changepath() {
+                const name = document.getElementById("path").value;
+                const body = {
+                    name: name,
+                };
+
+                fetch(`/change_path`, {
+                    method: "POST",
+                    body: JSON.stringify({"path": name}),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json(); // Parse the JSON data from the response
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    alert(`${JSON.stringify(data)}`);
+                })
+
+            }
+  </script>
+
+<script src="https://getbootstrap.com/docs/5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://getbootstrap.com/docs/5.3/examples/sidebars/sidebars.js"></script></body>
 </html>
