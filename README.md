@@ -23,5 +23,5 @@ To use the application:
 
 ![home](https://github.com/danielecursano/expencel/blob/main/images/home.png)
 ![sheet](https://github.com/danielecursano/expencel/blob/main/images/sheet.png)
-![average](https://github.com/danielecursano/expencel/blob/main/images/average.png)
+![add](https://github.com/danielecursano/expencel/blob/main/images/newcell.png)
 ![pie_chart](https://github.com/danielecursano/expencel/blob/main/images/pie.png)
