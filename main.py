@@ -4,4 +4,4 @@ import sys
 
 if __name__=='__main__':
     app = Server()
-    app.run()
+    app.run(debug=1)

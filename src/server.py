@@ -37,16 +37,18 @@ class Server:
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
         if not sheet:
             return "Sheet not found"
-
         cells = sheet.cells
         args = request.args
         date = args.get("date")
-        date = [int(x) for x in list(date)] if (date != None or date == "") else 0
-        if date and len(date)==8:
-            day = date[0]*10 + date[1]
-            month = date[2]*10 + date[3]
-            year = date[4]*1000 + date[5]*100 + date[6]*10 + date[7]
-            if day and month:
+        if date != None and len(date) > 0:
+            date = [int(x) for x in date.split("-")]
+        else:
+            date = None
+        if date:
+            day = date[0]
+            month = date[1]
+            year = date[2]
+            if day!=0 and month!=0:
                 cells = sheet.filter(year, month, day)
             elif day==0 and month:
                 cells = sheet.filter(year, month)
