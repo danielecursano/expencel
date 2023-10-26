@@ -35,22 +35,13 @@ class Server:
             return "Sheet not found"
         cells = sheet.cells
         args = request.args
-        date = args.get("date")
-        if date != None and len(date) > 0:
-            date = [int(x) for x in date.split("-")]
-        else:
-            date = None
-        if date:
-            day = date[0]
-            month = date[1]
-            year = date[2]
-            if day!=0 and month!=0:
-                cells = sheet.filter(year, month, day)
-            elif day==0 and month:
-                cells = sheet.filter(year, month)
-            else:
-                cells = sheet.filter(year)
-        
+        start_date = args.get("start_date")
+        end_date = args.get("end_date")
+
+        if start_date not in [None, ""] and end_date not in [None, ""]:
+            start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
+            cells = sheet.range_date(start_date, end_date)
         author = args.get("author")
         category = args.get("category")
         filters = {}

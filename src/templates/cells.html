@@ -242,7 +242,8 @@
               <option value="{{f}}">{{f}}</option>
               {% endfor %}
             </select>
-            <input type="text" aria-label="date" class="form-control" placeholder="Date (dd-mm-YY)" id="date">
+            <input type="date" aria-label="date" class="form-control" id="start_date">
+            <input type="date" aria-label="date" class="form-control" id="end_date">
             
             <button type="button" class="btn btn-outline-success" onclick="filter()">Filter</button>
           </div>
@@ -344,11 +345,11 @@
       const category = document.getElementById('cat').value;
       const author = document.getElementById('aut').value;
       const function_name = document.getElementById('function').value;
-      const date = document.getElementById('date').value;
+      const start_date = document.getElementById('start_date').value;
+      const end_date = document.getElementById('end_date').value;
       const param = document.getElementById("amount").value;
       // Create the URL for the page.
-      const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&date=${date}&param=${param}`;
-
+      const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&start_date=${start_date}&end_date=${end_date}&param=${param}`;
       // Open the page in a new tab in the browser.
       window.open(url, '_blank');
     }
