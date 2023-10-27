@@ -4,3 +4,4 @@ src/db/*
 src/.DS_STORE
 .vscode/*
 .idea/*
+src/static/*
