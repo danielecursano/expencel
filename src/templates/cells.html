@@ -195,7 +195,11 @@
                     <input type="date" class="form-control" placeholder="Date (dd-mm-YY)" id="post_date" required>
                   </div>
                   <div class="col">
-                    <input type="text" class="form-control" placeholder="Category" id="post_category" required>
+                    <input type="text" class="form-control" placeholder="Category" id="post_category" required list="categories">
+                    <datalist id="categories">
+                      {% for cat in categories %}
+                      <option value="{{cat}}">{{cat}}</option>
+                      {% endfor %}
                   </div>
                 </div>
                 <br>
@@ -207,7 +211,11 @@
                     <input type="text" class="form-control" placeholder="Description" id="desc" required>
                   </div>
                   <div class="col">
-                    <input type="text" id="post_author" placeholder="Author" class="form-control" required>
+                    <input type="text" id="post_author" placeholder="Author" class="form-control" required list="authors">
+                      <datalist id="authors">
+                      {% for a in authors %}
+                      <option value="{{a}}">{{a}}</option>
+                      {% endfor %}
                   </div>
                 </div>
               </div>

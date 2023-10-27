@@ -11,6 +11,10 @@ class Cell:
 
     def __repr__(self) -> str:
         return f"<{self.cat} {self.day} : {self.amount}>"
+    
+    @property
+    def list(self):
+        return [self.day, self.cat, self.amount, self.desc, self.author]
 
 class Sheet:
     def __init__(self, name: str, path, loaded=False):
@@ -72,9 +76,11 @@ class Sheet:
     
     def basic_algo(self, start, end):
         filtered_cells = []
-        for i in self.cells:
-            if i.day >= start and i.day <= end:
-                filtered_cells.append(i)
+        i = 0
+        while i < len(self.cells) and self.cells[i].day <= end:
+            if self.cells[i].day >= start:
+                filtered_cells.append(self.cells[i])
+            i += 1
         return filtered_cells
 
     def filter(self, *filters, cells=None):
@@ -137,10 +143,10 @@ if __name__=='__main__':
     #TESTING RANGE DATE METHOD
     s = Sheet.load("2022-2023", "/Users/daniele/Desktop/c++/")
     print(len(s.cells))
-    #start_d = s.cells[0].day
-    #end_d = s.cells[-1].day
-    start_d = datetime.date(2022, 10, 26)
-    end_d = datetime.date(2023, 10, 26)
+    start_d = s.cells[0].day
+    end_d = s.cells[-1].day
+    #start_d = datetime.date(2022, 10, 26)
+    #end_d = datetime.date(2023, 10, 26)
     start = time.time()
     tmp = s.range_date(start_d, end_d)
     end = time.time()

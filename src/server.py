@@ -4,7 +4,8 @@ import src.functions as functions
 from src.constants import DATABASE_PATH
 import datetime 
 import json
-import os
+import os        
+import csv
 
 class Server:
 
@@ -24,6 +25,7 @@ class Server:
         self.app.route("/delete/<sheet_name>", methods=["GET"])(self.delete_sheet)
         self.app.route("/change_path", methods=["POST"])(self.change_path)
         self.app.route("/download/<sheet_name>", methods=["GET"])(self.download_sheet)
+        self.app.route("/export/<sheet_name>", methods=["GET"])(self.export_sheet)
 
     def get_sheet(self, alert=None):
         content = list(self.sheets.keys())
@@ -66,11 +68,11 @@ class Server:
         elif function == "LESS THAN":
             param = int(args.get("param")) if args.get("param") != "" else 10000000
             content = functions.LT(cells, param)
-            result = None
+            result = len(content)
         elif function == "MORE THAN":
             param = int(args.get("param")) if args.get("param") != "" else 0
             content = functions.BT(cells, param)
-            result = None
+            result = len(content)
         elif function == "SORT":
             content = functions.SORT(cells)
             result = None
@@ -133,6 +135,20 @@ class Server:
         if sheet_name not in self.sheets.keys():
             return self.get_sheet(alert="Sheet not found")
         return send_file(f"{self.__path}{sheet_name}.db", attachment_filename=f"{sheet_name}.db")
+    
+    def export_sheet(self, sheet_name):
+        if sheet_name not in self.sheets.keys():
+            return self.get_sheet(alert="Sheet not found")
+        tmp_sheet = self.sheets[sheet_name]
+        with open("src/static/tmp.csv", "w", newline="") as file:
+            writer = csv.writer(file)
+            field = ["index", "date", "category", "amount", "description", "author"]
+            writer.writerow(field)
+            for idx in range(0, len(tmp_sheet.cells)):
+                tmp = tmp_sheet.cells[idx].list
+                tmp.insert(0, idx)
+                writer.writerow(tmp)
+        return send_file(f"static/tmp.csv", mimetype="text/csv", download_name="sheet.csv", as_attachment=True)
 
     def run(self, debug=0):
         self.app.run(debug=debug)

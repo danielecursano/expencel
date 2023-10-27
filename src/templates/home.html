@@ -184,7 +184,7 @@
               {% for id in range(0, content|length) %}
                 <tr>
                     <td><a href="/sheet/{{content[id]}}" style="text-decoration: none; color: white;">{{content[id]}}</a></td>
-                    <td><a href="/delete/{{content[id]}}" style="text-decoration: none; color: white;">DELETE</a> - <a href="/download/{{content[id]}}" style="text-decoration: none; color: white;">DOWNLOAD</a></td>
+                    <td><a href="/delete/{{content[id]}}" style="text-decoration: none; color: white;">DELETE</a> - <a href="/download/{{content[id]}}" style="text-decoration: none; color: white;">DOWNLOAD</a> - <a href="/export/{{content[id]}}" style="text-decoration: none; color: white;">EXPORT</a></td>
                 </tr>
               {% endfor %}
             </tbody>
