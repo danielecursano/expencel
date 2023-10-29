@@ -59,4 +59,13 @@ def GRAPH_DAY_BY_DAY(cells):
     plt.savefig("src/static/tmp.png")
     return 0
 
-FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY"]
+def SUMMARY(cells):
+    tmp = {}
+    for cell in cells:
+        if cell.cat not in tmp.keys():
+            tmp[cell.cat] = 0
+        tmp[cell.cat] += cell.amount
+    tmp["TOTAL"] = sum([x for x in tmp.values()])
+    return [["", k, "", v, ""] for k, v in tmp.items()]
+
+FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY", "SUMMARY"]

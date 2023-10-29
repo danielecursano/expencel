@@ -87,6 +87,9 @@ class Server:
             functions.GRAPH_DAY_BY_DAY(cells)
             image = "tmp.png"
             result = None
+        elif function == "SUMMARY":
+            content = functions.SUMMARY(cells)
+            result = None
         else:
             result = None
 

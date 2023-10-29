@@ -269,6 +269,16 @@
           </tr>
         </thead>
         <tbody>
+          {% if function[0] != None %}
+          <tr>
+            <th scope="row">{{function[0].upper()}}</th>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>{{function[1]}}</td>
+            <td></td>
+        </tr>
+          {% endif %}
           {% for id in range(0, content|length) %}
           {% if content[id][3] < 0 %} 
             <tr class="table-success">
@@ -283,16 +293,6 @@
             <td>{{content[id][4]}}</td>
             </tr>
           {% endfor %}
-          {% if function[0] != None %}
-          <tr>
-            <th scope="row">{{function[0].upper()}}</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>{{function[1]}}</td>
-            <td></td>
-        </tr>
-          {% endif %}
         </tbody>
       </table>
       {% if image_path != None %}
