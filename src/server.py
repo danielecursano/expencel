@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, send_file
 from src.structs import Sheet
 import src.functions as functions
-from src.constants import DATABASE_PATH
+from src.constants import DATABASE_PATH, MONTHS
 import datetime 
 import json
 import os        
@@ -54,7 +54,7 @@ class Server:
         cells = sheet.filter(filters, cells=cells) if len(filters.items()) != 0 else cells
         
         content = [[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in cells]
-
+        columns = ["Date", "Category", "Description", "Amount", "Author"]
         function = args.get("function")
         image = None
         function = function.upper() if function else None
@@ -88,12 +88,18 @@ class Server:
             image = "tmp.png"
             result = None
         elif function == "SUMMARY":
-            content = functions.SUMMARY(cells)
+            content, option = functions.SUMMARY(cells)
+            if option == 0:
+                columns = ["Category", "Amount"]
+            else:
+                months = [MONTHS[x-1] for x in content[0]]
+                content = [[k, *v] for k, v in content[1].items()]
+                columns = ["Category"] + months
             result = None
         else:
             result = None
 
-        return render_template("cells.html", sheet_name=sheet.name, content=content, function=[function if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=functions.FUNCTIONS, image_path=image)
+        return render_template("cells.html", sheet_name=sheet.name, content=content, function=[function if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=functions.FUNCTIONS, image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None

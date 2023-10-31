@@ -261,11 +261,9 @@
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">Date</th>
-            <th scope="col">Category</th>
-            <th scope="col">Description</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Author</th>
+            {% for col in columns %}
+            <th scope="col">{{col}}</th>
+            {% endfor %}
           </tr>
         </thead>
         <tbody>
@@ -280,10 +278,10 @@
         </tr>
           {% endif %}
           {% for id in range(0, content|length) %}
-          {% if content[id][3] < 0 %} 
-            <tr class="table-success">
+          {% if content[id][0] == "TOTAL" %}
+            <tr class="table-primary">
           {% else %}
-            <tr>
+            <tr> 
           {% endif %}
             <th scope="row">{{id}}</th>
             <td>{{content[id][0]}}</td>
@@ -384,6 +382,7 @@
         method: "POST",
         body: JSON.stringify(body),
       });
+      location.reload();
     }
 
     function newobj() {
@@ -405,6 +404,7 @@
                 .then(data => {
                     alert(`${JSON.stringify(data)}`);
                 })
+                location.reload();
 
             }
       
@@ -427,7 +427,7 @@
                 .then(data => {
                     alert(`${JSON.stringify(data)}`);
                 })
-
+                location.reload();
             }
 
 </script>
