@@ -78,7 +78,7 @@ def SUMMARY_MONTHS(cells):
     return [months, filtered_row], 1
 
 def SUMMARY(cells):
-    if (cells[-1].day - cells[0].day).days > 31:
+    if (cells[-1].day - cells[0].day).days >= 31:
         return SUMMARY_MONTHS(cells)
     tmp = {}
     for cell in cells:
@@ -86,6 +86,6 @@ def SUMMARY(cells):
             tmp[cell.cat] = 0
         tmp[cell.cat] += cell.amount
     tmp["TOTAL"] = sum([x for x in tmp.values()])
-    return [[k, v, "", "", ""] for k, v in tmp.items()], 0
+    return [[k, v] for k, v in tmp.items()], 0
 
 FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY", "SUMMARY"]

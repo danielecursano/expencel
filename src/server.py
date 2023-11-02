@@ -92,7 +92,24 @@ class Server:
             if option == 0:
                 columns = ["Category", "Amount"]
             else:
-                months = [MONTHS[x-1] for x in content[0]]
+                months = []
+                for x in content[0]:
+                    months.append(MONTHS[x-1])
+                    months.append(f"{MONTHS[x-1]} (%)")
+                tmp_total = content[1]["TOTAL"]
+                for k, v in content[1].items():
+                    if k != "TOTAL":    
+                        tmp_len = len(v)
+                        added = 0
+                        for x in range(0, tmp_len):
+                            v.insert(added+x+1, round(100*(v[added+x]/tmp_total[x]), 2))
+                            added += 1
+                    else:
+                        tmp_len = len(v)
+                        added = 0
+                        for x in range(0, tmp_len):
+                            v.insert(added+x+1, 100)
+                            added += 1
                 content = [[k, *v] for k, v in content[1].items()]
                 columns = ["Category"] + months
             result = None
