@@ -113,6 +113,32 @@ class Server:
                 content = [[k, *v] for k, v in content[1].items()]
                 columns = ["Category"] + months
             result = None
+        elif function == "PREDICT":
+            content = functions.PREDICT_NEXT_MONTH(cells)
+            months = []
+            for x in content[0]:
+                months.append(MONTHS[x-1])
+                months.append(f"{MONTHS[x-1]} (%)")
+            tmp_total = content[1]["TOTAL"]
+            for k, v in content[1].items():
+                if k != "TOTAL":    
+                    tmp_len = len(v)
+                    added = 0
+                    for x in range(0, tmp_len):
+                        tmp = 0
+                        if tmp_total[x] != 0:
+                            tmp = round(100*(v[added+x]/tmp_total[x]), 2)
+                        v.insert(added+x+1, tmp)
+                        added += 1
+                else:
+                    tmp_len = len(v)
+                    added = 0
+                    for x in range(0, tmp_len):
+                        v.insert(added+x+1, 100)
+                        added += 1
+            content = [[k, *v] for k, v in content[1].items()]
+            columns = ["Category"] + months
+            result = None
         else:
             result = None
 

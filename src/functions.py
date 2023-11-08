@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
+from src.linear_regression import LinearRegression
 matplotlib.use('agg')
 
 def SUM(cells):
@@ -88,4 +89,13 @@ def SUMMARY(cells):
     tmp["TOTAL"] = sum([x for x in tmp.values()])
     return [[k, v] for k, v in tmp.items()], 0
 
-FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY", "SUMMARY"]
+def PREDICT_NEXT_MONTH(cells):
+    data, _ = SUMMARY_MONTHS(cells)
+    next_month = data[0][-1]+1
+    data[0].append(next_month)
+    for k, v in data[1].items():
+        v.append(LinearRegression.predict(v))
+    return data
+
+
+FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY", "SUMMARY", "PREDICT"]
