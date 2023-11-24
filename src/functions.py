@@ -91,10 +91,13 @@ def SUMMARY(cells):
 
 def PREDICT_NEXT_MONTH(cells):
     data, _ = SUMMARY_MONTHS(cells)
-    next_month = data[0][-1]+1
-    data[0].append(next_month)
+    data[0].append(data[0][-1]+1)
+    total_sum = 0
     for k, v in data[1].items():
-        v.append(LinearRegression.predict(v))
+        tmp = LinearRegression.predict(v)
+        v.append(tmp)
+        total_sum += tmp
+    data[1]["TOTAL"][-1] = total_sum
     return data
 
 

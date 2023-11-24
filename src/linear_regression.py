@@ -12,6 +12,7 @@ class LinearRegression:
         sum_x_squared = np.sum(months ** 2)
         slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x_squared - sum_x ** 2)
         intercept = (sum_y - slope * sum_x) / n
-        return round(intercept + slope * n, 2)
+        res = round(intercept + slope*n, 2)
+        return max([res, 0])
 
         
