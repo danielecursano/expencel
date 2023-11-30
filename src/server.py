@@ -117,8 +117,8 @@ class Server:
             content = functions.PREDICT_NEXT_MONTH(cells)
             months = []
             for x in content[0]:
-                months.append(MONTHS[x-1])
-                months.append(f"{MONTHS[x-1]} (%)")
+                months.append(MONTHS[(x-1)%12])
+                months.append(f"{MONTHS[(x-1)%12]} (%)")
             tmp_total = content[1]["TOTAL"]
             for k, v in content[1].items():
                 if k != "TOTAL":    

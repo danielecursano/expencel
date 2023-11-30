@@ -4,10 +4,10 @@ from src.linear_regression import LinearRegression
 matplotlib.use('agg')
 
 def SUM(cells):
-    return sum([cell.amount for cell in cells])
+    return round(sum([cell.amount for cell in cells]), 2)
 
 def AVERAGE(cells):
-    return SUM(cells)/len(cells)
+    return round(SUM(cells)/len(cells), 2)
 
 def RECENT(cells):
     return cells[::-1]
