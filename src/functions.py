@@ -89,16 +89,6 @@ def SUMMARY(cells):
     tmp["TOTAL"] = sum([x for x in tmp.values()])
     return [[k, v] for k, v in tmp.items()], 0
 
-def PREDICT_NEXT_MONTH(cells):
-    data, _ = SUMMARY_MONTHS(cells)
-    data[0].append(data[0][-1]+1)
-    total_sum = 0
-    for k, v in data[1].items():
-        tmp = LinearRegression.predict(v)
-        v.append(tmp)
-        total_sum += tmp
-    data[1]["TOTAL"][-1] = total_sum
-    return data
 
 
 FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY", "SUMMARY", "PREDICT"]
