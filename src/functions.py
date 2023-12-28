@@ -21,8 +21,8 @@ def BT(cells, param):
     return [[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in tmp if cell is not None]
 
 def SORT(cells):
-    cells.sort(key=lambda cell: cell.amount, reverse=True)
-    return [[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in cells]
+    #cells.sort(key=lambda cell: cell.amount, reverse=True)
+    return sorted([[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in cells], key=lambda cell: cell[3], reverse=True)
 
 def R_SORT(cells):
     return SORT(cells)[::-1]
