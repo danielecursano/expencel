@@ -61,21 +61,27 @@ def GRAPH_DAY_BY_DAY(cells):
     return 0
 
 def SUMMARY_MONTHS(cells):
-    min_month = cells[0].day.month
-    max_month = cells[-1].day.month
-    months = []
-    rows = {"TOTAL": [0]*(max_month-min_month+1)}
+    unique_months_years = sorted(set((cell.day.year, cell.day.month) for cell in cells))
+
+    months = [month for _, month in unique_months_years]
+
+    rows = {"TOTAL": [0] * len(months)}
     for cell in cells:
         tmp_cat = cell.cat
         tmp_month = cell.day.month
-        if tmp_month not in months:
-            months.append(tmp_month)
-        if tmp_cat not in rows.keys():
-            rows[tmp_cat] = [0]*(max_month-min_month+1)
-        rows[tmp_cat][tmp_month-min_month] += cell.amount
-        rows["TOTAL"][tmp_month-min_month] += cell.amount
+        tmp_year = cell.day.year
+
+        index = unique_months_years.index((tmp_year, tmp_month))
+
+        if tmp_cat not in rows:
+            rows[tmp_cat] = [0] * len(months)
+
+        rows[tmp_cat][index] += cell.amount
+        rows["TOTAL"][index] += cell.amount
+
     filtered_row = {key: value for key, value in rows.items() if key != "TOTAL"}
     filtered_row["TOTAL"] = rows["TOTAL"]
+
     return [months, filtered_row], 1
 
 def SUMMARY(cells):
@@ -86,7 +92,7 @@ def SUMMARY(cells):
         if cell.cat not in tmp.keys():
             tmp[cell.cat] = 0
         tmp[cell.cat] += cell.amount
-    tmp["TOTAL"] = sum([x for x in tmp.values()])
+    tmp["TOTAL"] = round(sum([x for x in tmp.values()]), 2)
     return [[k, v] for k, v in tmp.items()], 0
 
 def PREDICT_NEXT_MONTH(cells):
