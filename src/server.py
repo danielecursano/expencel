@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, send_file
 from src.structs import Sheet
+from src.interfaces import ISheet, toCell
 import src.functions as functions
 from src.constants import DATABASE_PATH, MONTHS
 import datetime 
@@ -30,65 +31,56 @@ class Server:
     def get_sheet(self, alert=None):
         content = list(self.sheets.keys())
         return render_template("home.html", content=content, msg=alert)
-
+    
     def get_cells(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
         if not sheet:
             return "Sheet not found"
-        cells = sheet.cells
         args = request.args
         start_date = args.get("start_date")
-        end_date = args.get("end_date")
-
-        if start_date not in [None, ""] and end_date not in [None, ""]:
-            start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
-            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
-            cells = sheet.range_date(start_date, end_date)
-        author = args.get("author")
-        category = args.get("category")
-        filters = {}
-        if author and author.upper() in sheet.authors:
-            filters["author"] = author
-        if category and category.upper() in sheet.categories:
-            filters["category"] = category
-        cells = sheet.filter(filters, cells=cells) if len(filters.items()) != 0 else cells
-        
-        content = [[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in cells]
-        columns = ["Date", "Category", "Description", "Amount", "Author"]
         function = args.get("function")
+        end_date = args.get("end_date")
+        author = args.get("author") 
+        category = args.get("category")
+        author = author if author != "Author" else None
+        category = category if category != "Category" else None
+        content = ISheet(f"src/db/{sheet_name}.db").filter(author=author, category=category, start_date=start_date, end_date=end_date)
+        result = None
+        columns = ["Date", "Description", "Category", "Amount", "Author"]
         image = None
         function = function.upper() if function else None
+        content = [toCell(d) for d in content]
         if function == "SUM":
-            result = functions.SUM(cells)
+            result = functions.SUM(content)
         elif function == "AVERAGE":
-            result = functions.AVERAGE(cells)
+            result = functions.AVERAGE(content)
         elif function == "RECENT":
             content = functions.RECENT(content)
             result = None
         elif function == "LESS THAN":
             param = int(args.get("param")) if args.get("param") != "" else 10000000
-            content = functions.LT(cells, param)
+            content = functions.LT(content, param)
             result = len(content)
         elif function == "MORE THAN":
             param = int(args.get("param")) if args.get("param") != "" else 0
-            content = functions.BT(cells, param)
+            content = functions.BT(content, param)
             result = len(content)
         elif function == "SORT":
-            content = functions.SORT(cells)
+            content = functions.SORT(content)
             result = None
         elif function == "REVERSED SORT":
-            content = functions.R_SORT(cells)
+            content = functions.R_SORT(content)
             result = None
         elif function == "PIE":
-            functions.PIE(cells)
+            functions.PIE(content)
             image = "tmp.png"
             result = None
         elif function == "GRAPH DAY BY DAY":
-            functions.GRAPH_DAY_BY_DAY(cells)
+            functions.GRAPH_DAY_BY_DAY(content)
             image = "tmp.png"
             result = None
         elif function == "SUMMARY":
-            content, option = functions.SUMMARY(cells)
+            content, option = functions.SUMMARY(content)
             if option == 0:
                 columns = ["Category", "Amount"]
             else:
@@ -114,7 +106,7 @@ class Server:
                 columns = ["Category"] + months
             result = None
         elif function == "PREDICT":
-            content = functions.PREDICT_NEXT_MONTH(cells)
+            content = functions.PREDICT_NEXT_MONTH(content)
             months = []
             for x in content[0]:
                 months.append(MONTHS[(x-1)%12])
@@ -141,7 +133,7 @@ class Server:
             result = None
         else:
             result = None
-
+        content = [c.list for c in content]
         return render_template("cells.html", sheet_name=sheet.name, content=content, function=[function if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=functions.FUNCTIONS, image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):
@@ -154,7 +146,7 @@ class Server:
         desc = args["description"]
         amount = float(args["amount"])
         author = args["author"]
-        sheet.add_cell(desc, cat, amount, author, datetime.datetime.strptime(date, "%Y-%m-%d").date())
+        sheet = ISheet(f"src/db/{sheet_name}.db").add_cell(desc, cat, amount, author, date)
         return {"Message": "Success!"}
     
     def create_sheet(self, sheet_name):

@@ -2,7 +2,7 @@ import datetime
 import sqlite3 
 
 class Cell:
-    def __init__(self, day: datetime.date, desc: str, cat: str, amount: float, author: str):
+    def __init__(self, day, desc: str, cat: str, amount: float, author: str):
         self.day = day
         self.desc = desc
         self.cat = cat
@@ -41,84 +41,8 @@ class Sheet:
         for e in range(0, len(self.cells)):
             if new_cell.day <= self.cells[e].day:
                 self.cells.insert(e, new_cell)
-                self.__save()
                 return
         self.cells.append(new_cell)
-        self.__save()
-
-    def __binary_search(self, start, end, low, high):
-        if low > high:
-            return -1
-        middle = (low+high) // 2
-        if self.cells[middle].day >= start and self.cells[middle].day <= end:
-            return middle
-        if self.cells[middle].day < start:
-            return self.__binary_search(start, end, middle+1, high)
-        else:
-            return self.__binary_search(start, end, low, middle-1)
-
-    def range_date(self, start: datetime.date, end: datetime.date):
-        '''
-        Sperimental method proves that for small range of dates this method is faster than basic_algo
-        Execution times closer for bigger timedelta from start and end days
-        '''
-        filtered_cells = []
-        index = self.__binary_search(start, end, 0, len(self.cells))
-        left_index = index
-        while left_index >= 0 and self.cells[left_index].day >= start:
-            filtered_cells.insert(0, self.cells[left_index])
-            left_index += -1
-        index += 1
-        while index < len(self.cells) and self.cells[index].day <= end:
-            filtered_cells.append(self.cells[index])
-            index += 1
-        return filtered_cells
-    
-    def basic_algo(self, start, end):
-        filtered_cells = []
-        i = 0
-        while i < len(self.cells) and self.cells[i].day <= end:
-            if self.cells[i].day >= start:
-                filtered_cells.append(self.cells[i])
-            i += 1
-        return filtered_cells
-
-    def filter(self, *filters, cells=None):
-        cells_to_filter = self.cells if cells==None else cells
-        filtered_cells = []
-        if len(filters) == 1 and isinstance(filters[0], int):
-            for e in cells_to_filter:
-                if e.day.year == filters[0]:
-                    filtered_cells.append(e)
-        elif len(filters) == 2 and isinstance(filters[0], int) and isinstance(filters[0], int):
-            for e in cells_to_filter:
-                if e.day.year == filters[0] and e.day.month == filters[1]:
-                    filtered_cells.append(e)
-        elif len(filters) == 3 and isinstance(filters[0], int) and isinstance(filters[0], int) and isinstance(filters[2], int):
-            for e in cells_to_filter:
-                if e.day.year == filters[0] and e.day.month == filters[1] and e.day.day == filters[2]:
-                    filtered_cells.append(e)
-        else:
-            if isinstance(filters[0], dict):
-                for e in cells_to_filter:
-                    tmp = True
-                    for k, v in filters[0].items():
-                        if k == "category" and v.upper() != e.cat:
-                            tmp = False
-                        elif k == "author" and v.upper() != e.author:
-                            tmp = False
-                    if tmp:
-                        filtered_cells.append(e)
-        return filtered_cells
-    
-    def __save(self):
-        db = sqlite3.connect(self.__path+self.name+".db")
-        cursor = db.cursor()
-        cursor.execute("DELETE FROM cells")
-        for cell in self.cells:
-            data = (cell.day, cell.desc, cell.cat, cell.amount, cell.author)
-            cursor.execute("INSERT INTO cells VALUES (?, ?, ?, ?, ?)", data)
-        db.commit()
 
     @staticmethod
     def load(name, path):
