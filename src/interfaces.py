@@ -60,6 +60,16 @@ class ISheet:
     def name(self):
         return (self.path.split("/")[-1]).replace(".db","")
     
+    @staticmethod
+    def new(name, path):
+        path = path+name+".db"
+        conn = sqlite3.connect(path)
+        cursor = conn.cursor()
+        cursor.execute("CREATE TABLE IF NOT EXISTS cells (date text, desc text, cat text, amount int, author text);")
+        conn.commit()
+        conn.close()
+        return ISheet(path)
+
 class Cell:
     def __init__(self, day, desc: str, cat: str, amount: float, author: str):
         self.day = day

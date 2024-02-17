@@ -151,7 +151,7 @@ class Server:
     def create_sheet(self, sheet_name):
         if sheet_name in self.sheets.keys():
             return {"Error:" "Name already used!"}
-        new_obj = Sheet(sheet_name, self.__path)
+        new_obj = ISheet.new(sheet_name, self.__path)
         self.sheets[sheet_name] = new_obj
         return {"Message": "Success!"}
     
