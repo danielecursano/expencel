@@ -1,6 +1,5 @@
 import datetime
 import sqlite3
-from src.structs import Cell
 
 class ISheet:
     def __init__(self, path):
@@ -39,6 +38,44 @@ class ISheet:
         conn.close()
         return data
     
+    @property
+    def categories(self):
+        conn = sqlite3.connect(self.path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT cat FROM cells")
+        output = cursor.fetchall()
+        conn.close()
+        return [item[0] for item in output]
+    
+    @property
+    def authors(self):
+        conn = sqlite3.connect(self.path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT author FROM cells")
+        output = cursor.fetchall()
+        conn.close()
+        return [item[0] for item in output]
+    
+    @property 
+    def name(self):
+        return (self.path.split("/")[-1]).replace(".db","")
+    
+class Cell:
+    def __init__(self, day, desc: str, cat: str, amount: float, author: str):
+        self.day = day
+        self.desc = desc
+        self.cat = cat
+        self.amount = amount
+        self.author = author
+
+    def __repr__(self) -> str:
+        return f"<{self.cat} {self.day} : {self.amount}>"
+    
+    @property
+    def list(self):
+        return [self.day, self.cat, self.amount, self.desc, self.author]
+
+
 def toCell(data):
     return Cell(data[0], data[1], data[2], data[3], data[4])
 

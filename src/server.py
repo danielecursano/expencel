@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, send_file
-from src.structs import Sheet
 from src.interfaces import ISheet, toCell
 import src.functions as functions
 from src.constants import DATABASE_PATH, MONTHS
@@ -17,7 +16,7 @@ class Server:
         for file in files:
             if file[len(file)-2:] == "db":
                 name = file[:len(file)-3]
-                self.sheets[name] = Sheet.load(name, path)
+                self.sheets[name] = ISheet(path+name+".db")
         self.app = Flask(__name__)
         self.app.route("/", methods=["GET"])(self.get_sheet)
         self.app.route("/sheet/<sheet_name>", methods=["GET"])(self.get_cells)
@@ -44,7 +43,7 @@ class Server:
         category = args.get("category")
         author = author if author != "Author" else None
         category = category if category != "Category" else None
-        content = ISheet(f"src/db/{sheet_name}.db").filter(author=author, category=category, start_date=start_date, end_date=end_date)
+        content = sheet.filter(author=author, category=category, start_date=start_date, end_date=end_date)
         result = None
         columns = ["Date", "Description", "Category", "Amount", "Author"]
         image = None
