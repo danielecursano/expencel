@@ -21,7 +21,6 @@ def BT(cells, param):
     return [[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in tmp if cell is not None]
 
 def SORT(cells):
-    #cells.sort(key=lambda cell: cell.amount, reverse=True)
     return sorted([[cell.day, cell.cat, cell.desc, cell.amount, cell.author] for cell in cells], key=lambda cell: cell[3], reverse=True)
 
 def R_SORT(cells):
@@ -106,5 +105,12 @@ def PREDICT_NEXT_MONTH(cells):
     data[1]["TOTAL"][-1] = total_sum
     return data
 
+def sum_pd(df):
+    return sum(df.amount)
+
+def mean(df):
+    return round(sum(df.amount)/df.shape[0], 2)
+
 
 FUNCTIONS = ["SUM", "AVERAGE", "RECENT", "LESS THAN", "MORE THAN", "SORT", "REVERSED SORT", "PIE", "GRAPH DAY BY DAY", "SUMMARY", "PREDICT"]
+FUNCTIONS_HANDLER = {"SUM":sum_pd, "MEAN":mean}

@@ -1,12 +1,19 @@
 import datetime
 import sqlite3
+import pandas as pd
 
 class ISheet:
     def __init__(self, path):
         self.path = path
+        with sqlite3.connect(path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("CREATE TABLE IF NOT EXISTS cells (date text, desc text, cat text, amount int, author text);")
+            conn.commit()
+            self.df = pd.read_sql_query("select * from cells", conn)
+            self.df = self.df.set_index(pd.to_datetime(self.df.date))
+
     
     def add_cell(self, desc, cat, amount, author, date):
-        print("adding cells")
         conn = sqlite3.connect(self.path)
         cursor = conn.cursor()
         values = (date, desc, cat, amount, author)
@@ -15,61 +22,27 @@ class ISheet:
         conn.close()
 
     def filter(self, start_date=None, end_date=None, author=None, category=None):
-        conn = sqlite3.connect(self.path)
-        cursor = conn.cursor()
-        query = "SELECT * FROM cells WHERE 1=1"
-        params = []
-
-        if start_date:
-            query += " AND date >= ?"
-            params.append(start_date)
-        if end_date:
-            query += " AND date <= ?"
-            params.append(end_date)
+        data = self.df
+        if start_date and end_date:
+            data = data.loc[start_date:end_date]
         if author:
-            query += " AND author = ?"
-            params.append(author)
+            data = data[data["author"] == author]
         if category:
-            query += " AND cat = ?"
-            params.append(category)
-
-        cursor.execute(query, params)
-        data = cursor.fetchall()
-        conn.close()
+            data = data[data["cat"] == category]
         return data
     
     @property
     def categories(self):
-        conn = sqlite3.connect(self.path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT cat FROM cells")
-        output = cursor.fetchall()
-        conn.close()
-        return [item[0] for item in output]
+        return list(set(self.df.cat))
     
     @property
     def authors(self):
-        conn = sqlite3.connect(self.path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT DISTINCT author FROM cells")
-        output = cursor.fetchall()
-        conn.close()
-        return [item[0] for item in output]
+        return list(set(self.df.author))
     
     @property 
     def name(self):
         return (self.path.split("/")[-1]).replace(".db","")
     
-    @staticmethod
-    def new(name, path):
-        path = path+name+".db"
-        conn = sqlite3.connect(path)
-        cursor = conn.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS cells (date text, desc text, cat text, amount int, author text);")
-        conn.commit()
-        conn.close()
-        return ISheet(path)
-
 class Cell:
     def __init__(self, day, desc: str, cat: str, amount: float, author: str):
         self.day = day

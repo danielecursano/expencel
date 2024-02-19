@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, send_file
 from src.interfaces import ISheet, toCell
-import src.functions as functions
+from src.functions import FUNCTIONS_HANDLER
 from src.constants import DATABASE_PATH, MONTHS
 import datetime 
 import json
@@ -37,7 +37,7 @@ class Server:
             return "Sheet not found"
         args = request.args
         start_date = args.get("start_date")
-        function = args.get("function")
+        function_name = args.get("function")
         end_date = args.get("end_date")
         author = args.get("author") 
         category = args.get("category")
@@ -47,93 +47,10 @@ class Server:
         result = None
         columns = ["Date", "Description", "Category", "Amount", "Author"]
         image = None
-        function = function.upper() if function else None
-        content = [toCell(d) for d in content]
-        if function == "SUM":
-            result = functions.SUM(content)
-        elif function == "AVERAGE":
-            result = functions.AVERAGE(content)
-        elif function == "RECENT":
-            content = functions.RECENT(content)
-            result = None
-        elif function == "LESS THAN":
-            param = int(args.get("param")) if args.get("param") != "" else 10000000
-            content = functions.LT(content, param)
-            result = len(content)
-        elif function == "MORE THAN":
-            param = int(args.get("param")) if args.get("param") != "" else 0
-            content = functions.BT(content, param)
-            result = len(content)
-        elif function == "SORT":
-            content = functions.SORT(content)
-            result = None
-        elif function == "REVERSED SORT":
-            content = functions.R_SORT(content)
-            result = None
-        elif function == "PIE":
-            functions.PIE(content)
-            image = "tmp.png"
-            result = None
-        elif function == "GRAPH DAY BY DAY":
-            functions.GRAPH_DAY_BY_DAY(content)
-            image = "tmp.png"
-            result = None
-        elif function == "SUMMARY":
-            content, option = functions.SUMMARY(content)
-            if option == 0:
-                columns = ["Category", "Amount"]
-            else:
-                months = []
-                for x in content[0]:
-                    months.append(MONTHS[x-1])
-                    months.append(f"{MONTHS[x-1]} (%)")
-                tmp_total = content[1]["TOTAL"]
-                for k, v in content[1].items():
-                    if k != "TOTAL":    
-                        tmp_len = len(v)
-                        added = 0
-                        for x in range(0, tmp_len):
-                            v.insert(added+x+1, round(100*(v[added+x]/tmp_total[x]), 2))
-                            added += 1
-                    else:
-                        tmp_len = len(v)
-                        added = 0
-                        for x in range(0, tmp_len):
-                            v.insert(added+x+1, 100)
-                            added += 1
-                content = [[k, *v] for k, v in content[1].items()]
-                columns = ["Category"] + months
-            result = None
-        elif function == "PREDICT":
-            content = functions.PREDICT_NEXT_MONTH(content)
-            months = []
-            for x in content[0]:
-                months.append(MONTHS[(x-1)%12])
-                months.append(f"{MONTHS[(x-1)%12]} (%)")
-            tmp_total = content[1]["TOTAL"]
-            for k, v in content[1].items():
-                if k != "TOTAL":    
-                    tmp_len = len(v)
-                    added = 0
-                    for x in range(0, tmp_len):
-                        tmp = 0
-                        if tmp_total[x] != 0:
-                            tmp = round(100*(v[added+x]/tmp_total[x]), 2)
-                        v.insert(added+x+1, tmp)
-                        added += 1
-                else:
-                    tmp_len = len(v)
-                    added = 0
-                    for x in range(0, tmp_len):
-                        v.insert(added+x+1, 100)
-                        added += 1
-            content = [[k, *v] for k, v in content[1].items()]
-            columns = ["Category"] + months
-            result = None
-        else:
-            result = None
-        content = [c.list for c in content]
-        return render_template("cells.html", sheet_name=sheet.name, content=content, function=[function if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=functions.FUNCTIONS, image_path=image, columns=columns)
+        function = FUNCTIONS_HANDLER[function_name.upper()] if function_name else None
+        if function:
+            result = function(content)
+        return render_template("cells.html", sheet_name=sheet.name, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
@@ -151,7 +68,7 @@ class Server:
     def create_sheet(self, sheet_name):
         if sheet_name in self.sheets.keys():
             return {"Error:" "Name already used!"}
-        new_obj = ISheet.new(sheet_name, self.__path)
+        new_obj = ISheet(self.__path+sheet_name+".db")
         self.sheets[sheet_name] = new_obj
         return {"Message": "Success!"}
     
