@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, send_file
-from src.interfaces import ISheet, toCell
+from src.interfaces import ISheet
 from src.functions import FUNCTIONS_HANDLER
 from src.constants import DATABASE_PATH, MONTHS
 import datetime 
@@ -49,7 +49,11 @@ class Server:
         image = None
         function = FUNCTIONS_HANDLER[function_name.upper()] if function_name else None
         if function:
-            result = function(content)
+            tmp, data = function(content)
+            if tmp:
+                result = data
+            else:
+                image = "tmp.png"
         return render_template("cells.html", sheet_name=sheet.name, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):

@@ -42,27 +42,3 @@ class ISheet:
     @property 
     def name(self):
         return (self.path.split("/")[-1]).replace(".db","")
-    
-class Cell:
-    def __init__(self, day, desc: str, cat: str, amount: float, author: str):
-        self.day = day
-        self.desc = desc
-        self.cat = cat
-        self.amount = amount
-        self.author = author
-
-    def __repr__(self) -> str:
-        return f"<{self.cat} {self.day} : {self.amount}>"
-    
-    @property
-    def list(self):
-        return [self.day, self.cat, self.amount, self.desc, self.author]
-
-
-def toCell(data):
-    return Cell(data[0], data[1], data[2], data[3], data[4])
-
-if __name__=="__main__":
-    s = ISheet("db/spese.db")
-    t = s.filter(start_date="2024-01-01", end_date="2024-01-31", category="SPESA")
-    print(t)
