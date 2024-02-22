@@ -35,25 +35,41 @@ class Server:
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
         if not sheet:
             return "Sheet not found"
+        columns = ["Date", "Description", "Category", "Amount", "Author"]
+
         args = request.args
         start_date = args.get("start_date")
         function_name = args.get("function")
         end_date = args.get("end_date")
         author = args.get("author") 
         category = args.get("category")
+
         author = author if author != "Author" else None
         category = category if category != "Category" else None
+        function_name = function_name if function_name not in ["", None, "Function"] else None
+
         content = sheet.filter(author=author, category=category, start_date=start_date, end_date=end_date)
+
         result = None
-        columns = ["Date", "Description", "Category", "Amount", "Author"]
         image = None
+
         function = FUNCTIONS_HANDLER[function_name.upper()] if function_name else None
         if function:
-            tmp, data = function(content)
-            if tmp:
-                result = data
-            else:
+            type, data = function(content)
+            if type == 0:
                 image = "tmp.png"
+            elif type == 1:
+                result = data
+            elif type == 2:
+                content = data
+            elif type == 3:
+                content = data
+                columns = ["Category"] + list(data.index)
+                content = content.T
+                content["cat"] = content.index
+                column = content.pop("cat")
+                content.insert(0, "cat", column)
+
         return render_template("cells.html", sheet_name=sheet.name, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):

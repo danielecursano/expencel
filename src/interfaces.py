@@ -11,6 +11,7 @@ class ISheet:
             conn.commit()
             self.df = pd.read_sql_query("select * from cells", conn)
             self.df = self.df.set_index(pd.to_datetime(self.df.date))
+            self.df['date'] = pd.to_datetime(self.df['date'])
 
     
     def add_cell(self, desc, cat, amount, author, date):
