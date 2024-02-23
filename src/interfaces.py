@@ -9,10 +9,9 @@ class ISheet:
             cursor = conn.cursor()
             cursor.execute("CREATE TABLE IF NOT EXISTS cells (date text, desc text, cat text, amount int, author text);")
             conn.commit()
-            self.df = pd.read_sql_query("select * from cells", conn)
+            self.df = pd.read_sql_query("select * from cells order by date", conn)
             self.df = self.df.set_index(pd.to_datetime(self.df.date))
             self.df['date'] = pd.to_datetime(self.df['date'])
-
     
     def add_cell(self, desc, cat, amount, author, date):
         conn = sqlite3.connect(self.path)
