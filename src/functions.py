@@ -47,4 +47,10 @@ def summary(df):
     new_df["TOTAL"] = df.groupby([df["date"].dt.to_period("M")])["amount"].sum()
     return 3, new_df
 
-FUNCTIONS_HANDLER = {"SUM":sum_pd, "AVG":avg, "PIE": pie, "RECENT": recent, "SORT ASC": sortByValueAsc, "SORT DESC": sortByValueDesc, "PLOT LINE": plot_months, "SUMMARY": summary}
+def groupbyCat(df):
+    df = df.groupby("cat")["amount"].sum().reset_index(name="total_expenses")
+    df.fillna(0, inplace=True)
+    total_row = df
+    return 3, df
+
+FUNCTIONS_HANDLER = {"SUM":sum_pd, "AVG":avg, "PIE": pie, "RECENT": recent, "SORT ASC": sortByValueAsc, "SORT DESC": sortByValueDesc, "PLOT LINE": plot_months, "SUMMARY": summary, "GROUP_BY_CAT": groupbyCat}

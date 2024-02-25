@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, send_file
 from src.interfaces import ISheet
 from src.functions import FUNCTIONS_HANDLER
-from src.constants import DATABASE_PATH, MONTHS
+from src.constants import DATABASE_PATH
 import datetime 
 import json
 import os        
@@ -70,7 +70,7 @@ class Server:
                 column = content.pop("cat")
                 content.insert(0, "cat", column)
 
-        return render_template("cells.html", sheet_name=sheet.name, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
+        return render_template("cells.html",sheet_name=sheet.name, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
@@ -114,20 +114,14 @@ class Server:
     def download_sheet(self, sheet_name):
         if sheet_name not in self.sheets.keys():
             return self.get_sheet(alert="Sheet not found")
-        return send_file(f"{self.__path}{sheet_name}.db", attachment_filename=f"{sheet_name}.db")
+        return send_file(f"db/{sheet_name}.db", attachment_filename=f"{sheet_name}.db")
     
     def export_sheet(self, sheet_name):
-        if sheet_name not in self.sheets.keys():
+        sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
+        if not sheet:
             return self.get_sheet(alert="Sheet not found")
-        tmp_sheet = self.sheets[sheet_name]
-        with open("src/static/tmp.csv", "w", newline="") as file:
-            writer = csv.writer(file)
-            field = ["index", "date", "category", "amount", "description", "author"]
-            writer.writerow(field)
-            for idx in range(0, len(tmp_sheet.cells)):
-                tmp = tmp_sheet.cells[idx].list
-                tmp.insert(0, idx)
-                writer.writerow(tmp)
+        content = sheet.filter()
+        content.to_csv("src/static/tmp.csv", sep=",", index=False, encoding="utf-8")
         return send_file(f"static/tmp.csv", mimetype="text/csv", download_name="sheet.csv", as_attachment=True)
 
     def run(self, debug=0):

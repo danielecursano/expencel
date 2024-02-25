@@ -255,6 +255,11 @@
             <button type="button" class="btn btn-outline-success" onclick="filter()">Filter</button>
           </div>
           <br>
+          {% if image_path != None %}
+          <div class="container">
+          <img src="{{ url_for('static', filename=image_path) }}" alt="Graph" style="width: 40%; height: auto;" id="img">
+          </div>
+          {% endif %}
         <h2 style="color: white; font-weight: 500; font-size: 2rem;">Cells</h2>
         <table class="table table-hover table-striped table-dark" style="width: 95%;">
         <thead>
@@ -290,11 +295,6 @@
           {% endfor %}
         </tbody>
       </table>
-      {% if image_path != None %}
-      <div class="container">
-      <img src="{{ url_for('static', filename=image_path) }}" alt="Graph" style="width: 40%; height: auto;" id="img">
-      </div>
-      {% endif %}
     </div> 
   </main>
 
