@@ -1,13 +1,16 @@
 # Expencel - Web App for Daily Expense Management
 
-Expencel is a Flask-based web app that provides a simple and efficient way to record daily expenses and conduct detailed analysis on the collected data. The platform not only allows users to log their daily expenses but also offers several advanced features for analyzing and visualizing the data intuitively.
+Expencel is a Flask-based web app that provides a simple and efficient way to record daily expenses and conduct detailed analysis on the collected data. The platform not only allows users to log their daily expenses but also offers several advanced features for analyzing and visualizing the data intuitively. Additionally, it incorporates an LLM-powered chatbot using LangChain to assist users in conducting detailed analyses, especially on unstructured text.
 
 ## Table of contents
 * [Key Features](#key-features)
 * [Usage Instructions](#usage-instructions)
 * [Screenshots](#screenshots)
+* [TODO](#todo)
 
 ## Key Features
+
+- **LLM chat**: A chatbot implemented with LangChain assists users in conducting detailed analyses, especially on unstructured text.
 
 - **Expense Logging**: Users can easily input their daily expenses, including details such as the amount, category, and date.
 
@@ -26,7 +29,10 @@ To use the application:
 
 ## Screenshots
 
+![llm](https://github.com/danielecursano/expencel/blob/main/images/llm.png)
 ![home](https://github.com/danielecursano/expencel/blob/main/images/home.png)
-![sheet](https://github.com/danielecursano/expencel/blob/main/images/sheet.png)
-![add](https://github.com/danielecursano/expencel/blob/main/images/newcell.png)
-![pie_chart](https://github.com/danielecursano/expencel/blob/main/images/pie.png)
+![rows](https://github.com/danielecursano/expencel/blob/main/images/rows.png)
+![add](https://github.com/danielecursano/expencel/blob/main/images/add.png)
+
+## TODO
+- Implement tools which can be used my a LLM (ex. add new data)

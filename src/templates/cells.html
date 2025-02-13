@@ -217,7 +217,8 @@
                       {% endfor %}
                   </div>
                 </div>
-              </div>
+                <br>
+                </div>  
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" onclick="add()">Add</button>
@@ -254,6 +255,21 @@
             
             <button type="button" class="btn btn-outline-success" onclick="filter()">Filter</button>
           </div>
+
+          <!--prompt-->
+          <div class="input-group mb-3" style="width: 95%;">
+            <input id="prompt" type="text" class="form-control" placeholder="Write your prompt here!" aria-label="Prompt" aria-describedby="button-addon2">
+            <button class="btn btn-outline-info" type="button" id="button-addon2" onclick="filter()">Send</button>
+          </div>
+          
+          {% if llm_response != None %}
+            <div class="card" style="width: 95%;">
+              <div class="card-body">
+                <p style="color: red;">LLM:</p>
+                {{llm_response}}
+              </div>
+            </div>
+          {% endif %}
           <br>
           {% if image_path != None %}
           <div class="container">
@@ -351,8 +367,9 @@
       const start_date = document.getElementById('start_date').value;
       const end_date = document.getElementById('end_date').value;
       const param = document.getElementById("amount").value;
+      const prompt = document.getElementById("prompt").value;
       // Create the URL for the page.
-      const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&start_date=${start_date}&end_date=${end_date}&param=${param}`;
+      const url = `/sheet/{{sheet_name}}?category=${category}&author=${author}&function=${function_name}&start_date=${start_date}&end_date=${end_date}&param=${param}&prompt=${prompt}`;
       // Open the page in a new tab in the browser.
       window.open(url, '_blank');
     }

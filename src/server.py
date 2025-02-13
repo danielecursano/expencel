@@ -6,6 +6,7 @@ import datetime
 import json
 import os        
 import csv
+from src.agent import interact
 
 class Server:
 
@@ -43,6 +44,9 @@ class Server:
         end_date = args.get("end_date")
         author = args.get("author") 
         category = args.get("category")
+        prompt = args.get("prompt")
+
+        #print(bool(prompt))
 
         author = author if author != "Author" else None
         category = category if category != "Category" else None
@@ -70,7 +74,13 @@ class Server:
                 column = content.pop("cat")
                 content.insert(0, "cat", column)
 
-        return render_template("cells.html",sheet_name=sheet.name, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
+        llm_response = None
+        if prompt:
+            llm_response = interact(sheet_name, prompt, content)
+            self.sheets[sheet_name] = ISheet(f"src/db/{sheet_name}.db")
+            llm_response = llm_response.content
+
+        return render_template("cells.html",sheet_name=sheet.name, llm_response=llm_response, content=content.values.tolist(), function=[function_name if result!=None else None, result], categories=sheet.categories, authors=sheet.authors, functions=FUNCTIONS_HANDLER.keys(), image_path=image, columns=columns)
     
     def add_cell(self, sheet_name):
         sheet = self.sheets[sheet_name] if sheet_name in self.sheets.keys() else None
@@ -83,6 +93,7 @@ class Server:
         amount = float(args["amount"])
         author = args["author"]
         sheet = ISheet(f"src/db/{sheet_name}.db").add_cell(desc, cat, amount, author, date)
+        self.sheets[sheet_name] = ISheet(f"src/db/{sheet_name}.db")
         return {"Message": "Success!"}
     
     def create_sheet(self, sheet_name):
@@ -101,7 +112,7 @@ class Server:
         for file in files:
             if file[len(file)-2:] == "db":
                 name = file[:len(file)-3]
-                self.sheets[name] = Sheet.load(name, new_path)
+                self.sheets[name] = ISheet.load(name, new_path)
         return {"Message": "Success!"}
     
     def delete_sheet(self, sheet_name):

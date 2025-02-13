@@ -33,7 +33,7 @@ def avg(df):
     return 1, round(sum(df.amount)/df.shape[0], 2)
 
 def recent(df):
-    return 2, df.sort_index(ascending=False)
+    return 2, df.sort_index(ascending=True)
 
 def sortByValueAsc(df):
     return 2, df.sort_values(by="amount")
@@ -53,4 +53,4 @@ def groupbyCat(df):
     total_row = df
     return 3, df
 
-FUNCTIONS_HANDLER = {"SUM":sum_pd, "AVG":avg, "PIE": pie, "RECENT": recent, "SORT ASC": sortByValueAsc, "SORT DESC": sortByValueDesc, "PLOT LINE": plot_months, "SUMMARY": summary, "GROUP_BY_CAT": groupbyCat}
+FUNCTIONS_HANDLER = {"SUM":sum_pd, "AVG":avg, "PIE": pie, "ORDER BY OLDEST": recent, "SORT ASC": sortByValueAsc, "SORT DESC": sortByValueDesc, "PLOT LINE": plot_months, "SUMMARY": summary, "GROUP_BY_CAT": groupbyCat}
